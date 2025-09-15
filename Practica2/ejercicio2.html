@@ -1,0 +1,59 @@
+import math
+
+class Vector:
+    def __init__(self, x=0, y=0, z=0):
+        # Constructor de un vector
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def __str__(self):
+        return f"({self.x}, {self.y}, {self.z})"
+    # a) Suma de vectores
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
+    # b) Multiplicación por un escalar
+    def __mul__(self, escalar):
+        if isinstance(escalar, (int, float)):
+            return Vector(self.x * escalar, self.y * escalar, self.z * escalar)
+        else:
+            raise ValueError("La multiplicación debe ser con un escalar")
+    # c) Longitud del vector (con abs())
+    def __abs__(self):
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
+    # d) Vector normal
+    def normalizado(self):
+        magn = abs(self)
+        if magn == 0:
+            return Vector(0, 0, 0)
+        return Vector(self.x/magn, self.y/magn, self.z/magn)
+    # e) Producto escalar (usamos @ para simular)
+    def __matmul__(self, other):
+        return self.x*other.x + self.y*other.y + self.z*other.z
+    # f) Producto vectorial
+    def cruz(self, other):
+        cx = self.y*other.z - self.z*other.y
+        cy = self.z*other.x - self.x*other.z
+        cz = self.x*other.y - self.y*other.x
+        return Vector(cx, cy, cz)
+
+# main
+if __name__ == "__main__":
+    # Creamos vectores de ejemplo
+    a = Vector(1, 2, 3)
+    b = Vector(4, 5, 6)
+
+    print("Vector a:", a)
+    print("Vector b:", b)
+    # a) Suma
+    print("\nSuma a+b:", a+b)
+    # b) Multiplicación por escalar
+    print("a * 2:", a*2)
+    # c) Longitud
+    print("|a|:", abs(a))
+    # d) Vector normalizado
+    print("Normal de a:", a.normalizado())
+    # e) Producto escalar
+    print("a · b:", a @ b)
+    # f) Producto vectorial
+    print("a x b:", a.cruz(b))
