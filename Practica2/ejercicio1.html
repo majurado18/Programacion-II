@@ -1,0 +1,97 @@
+import math
+
+class Vector:
+    def __init__(self, x=0, y=0, z=0):
+        
+        self.x = x
+        self.y = y
+        self.z = z
+    # Sobrecarga suma
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
+    # Sobrecarga resta
+    def __sub__(self, other):
+        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+    # Sobrecarga multiplicación (producto punto)
+    def __mul__(self, other):
+        return self.x*other.x + self.y*other.y + self.z*other.z
+    # Sobrecarga @ como producto cruz
+    def __matmul__(self, other):
+        cx = self.y*other.z - self.z*other.y
+        cy = self.z*other.x - self.x*other.z
+        cz = self.x*other.y - self.y*other.x
+        return Vector(cx, cy, cz)
+    # Magnitud de un vector
+    def magnitud(self):
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
+    # Representación amigable
+    def __str__(self):
+        return f"({self.x}, {self.y}, {self.z})"
+
+class AlgebraVectorial:
+    # a) Perpendicularidad: |a+b| = |a-b|
+    @staticmethod
+    def perpen1(a, b):
+        return math.isclose((a+b).magnitud(), (a-b).magnitud())
+    # b) Perpendicularidad: |a-b| = |b-a|
+    @staticmethod
+    def perpen2(a, b):
+        return math.isclose((a-b).magnitud(), (b-a).magnitud())
+    # c) Perpendicularidad: a·b = 0
+    @staticmethod
+    def perpen3(a, b):
+        return math.isclose(a * b, 0.0)
+    # d) Perpendicularidad: |a+b|^2 = |a|^2 + |b|^2
+    @staticmethod
+    def perpen4(a, b):
+        return math.isclose((a+b).magnitud()**2, a.magnitud()**2 + b.magnitud()**2)
+    # e) Paralelismo: a = r*b  (proporcionalidad de coordenadas)
+    @staticmethod
+    def paralelo1(a, b):
+        try:
+            r1 = a.x / b.x if b.x != 0 else None
+            r2 = a.y / b.y if b.y != 0 else None
+            r3 = a.z / b.z if b.z != 0 else None
+            razones = [r for r in (r1, r2, r3) if r is not None]
+            return all(math.isclose(r, razones[0]) for r in razones)
+        except ZeroDivisionError:
+            return False
+    # f) Paralelismo: a x b = 0
+    @staticmethod
+    def paralelo2(a, b):
+        cruz = a @ b
+        return math.isclose(cruz.x, 0) and math.isclose(cruz.y, 0) and math.isclose(cruz.z, 0)
+    # g) Proyección de a sobre b
+    @staticmethod
+    def proyeccion(a, b):
+        escalar = (a * b) / (b.magnitud()**2)
+        return Vector(b.x*escalar, b.y*escalar, b.z*escalar)
+    # h) Componente de a en b
+    @staticmethod
+    def componente(a, b):
+        return (a * b) / b.magnitud()
+
+# main
+if __name__ == "__main__":
+    a = Vector(1, 2, 3)
+    b = Vector(2, 4, 6)
+
+    print("Vector a:", a)
+    print("Vector b:", b)
+
+    print("\n--- PERPENDICULARES ---")
+    print("Caso a) |a+b| = |a-b|:", AlgebraVectorial.perpen1(a, b))
+    print("Caso b) |a-b| = |b-a|:", AlgebraVectorial.perpen2(a, b))
+    print("Caso c) a·b = 0:", AlgebraVectorial.perpen3(a, b))
+    print("Caso d) |a+b|^2 = |a|^2 + |b|^2:", AlgebraVectorial.perpen4(a, b))
+
+    print("\n--- PARALELOS ---")
+    print("Caso e) a = r*b:", AlgebraVectorial.paralelo1(a, b))
+    print("Caso f) a x b = 0:", AlgebraVectorial.paralelo2(a, b))
+
+    print("\n--- PROYECCIÓN Y COMPONENTE ---")
+    proy = AlgebraVectorial.proyeccion(a, b)
+    print("Proyección de a sobre b:", proy)
+    comp = AlgebraVectorial.componente(a, b)
+
+    print("Componente de a en b:", comp)
